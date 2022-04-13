@@ -1,0 +1,128 @@
+// Copyright (c) 2016-2022, The Khronos Group Inc.
+//
+// SPDX-License-Identifier: CC-BY-4.0
+
+[[api-initialization]]
+== API 初始化
+
+在使用 一个 OpenXR 运行时前，一个应用程序 must: 通过创建一个 slink:XrInstance 对象来初始化它
+
+以下的函数用于收集关于API层信，收集系统已安装的扩展的信息，以及创建实例。
+
+.Instance Creation Functions
+****
+* flink:xrEnumerateApiLayerProperties
+* flink:xrEnumerateInstanceExtensionProperties
+* flink:xrCreateInstance
+****
+
+flink:xrEnumerateApiLayerProperties 和
+flink:xrEnumerateInstanceExtensionProperties can: 在 flink:xrCreateInstance 被调用前调用.
+
+[[exported-functions]]
+=== 导出函数
+加载器 must: 导出实现API的动态链接库的所有OpenXR API 核心函数
+
+应用程序 can: 通过使用 flink:xrGetInstanceProcAddr 获得扩展函数的指针来访问这些扩展函数
+
+[[function-pointers]]
+=== 函数指针
+[open,refpage='xrGetInstanceProcAddr',desc='Gets a function pointer for an OpenXR function',type='protos',xrefs='PFN_xrVoidFunction XrInstance']
+--
+所有OpenXR函数的的函数指针 can: 使用 flink:xrGetInstanceProcAddr来获得。
+
+include::../../generated/api/protos/xrGetInstanceProcAddr.txt[]
+
+.Parameter Descriptions
+****
+* pname:instance is the instance that the function pointer will be
+  compatible with, or code:NULL for functions not dependent on any instance.
+* pname:name is the name of the function to obtain.
+* pname:function is the address of the function pointer to get.
+****
+
+flink:xrGetInstanceProcAddr 自身通过平台和加载器的 特定的方式获得。
+
+通常，加载库会将这个函数导出为函数符号，因此应用程序 can:  链接到加载器库，或 动态加载并使用特定于平台的 API 来查找符号。
+
+加载程序 must: 为所有核心 OpenXR 函数导出函数符号。
+因此，仅使用核心 OpenXR 功能的应用程序 无需使用 flink:xrGetInstanceProcAddr。
+
+因为应用程序 can: 在创建实例之前调用 flink:xrGetInstanceProcAddr，所以当 pname:instance 参数为 dlink:XR_NULL_HANDLE 且 pname:name
+参数是以下字符串之一 时，flink:xrGetInstanceProcAddr 返回一个有效的函数指针
+
+.No Instance Required
+****
+* flink:xrEnumerateInstanceExtensionProperties
+* flink:xrEnumerateApiLayerProperties
+* flink:xrCreateInstance
+****
+
+flink:xrGetInstanceProcAddr must: return ename:XR_ERROR_HANDLE_INVALID if
+pname:name is not one of the above strings and pname:instance is
+dlink:XR_NULL_HANDLE.
+flink:xrGetInstanceProcAddr may: return ename:XR_ERROR_HANDLE_INVALID if
+pname:name is not one of the above strings and pname:instance is invalid but
+not dlink:XR_NULL_HANDLE.
+
+flink:xrGetInstanceProcAddr must: return ename:XR_ERROR_FUNCTION_UNSUPPORTED
+if pname:instance is a valid instance and the string specified in pname:name
+is not the name of an OpenXR core or enabled extension function.
+
+如果 pname:name 是 扩展函数的名字，那么 flink:xrGetInstanceProcAddr 的返回结果将需要根据  pname:instance 是如何创建的。
+
+
+
+If pname:instance was created with the related extension's name appearing in
+the slink:XrInstanceCreateInfo::pname:enabledExtensionNames array, then
+flink:xrGetInstanceProcAddr returns a valid function pointer.
+If the related extension's name did not appear in the
+slink:XrInstanceCreateInfo::pname:enabledExtensionNames array during the
+creation of pname:instance, then flink:xrGetInstanceProcAddr returns
+ename:XR_ERROR_FUNCTION_UNSUPPORTED.
+Because of this, function pointers returned by flink:xrGetInstanceProcAddr
+using one slink:XrInstance may not be valid when used with objects related
+to a different slink:XrInstance.
+
+The returned function pointer is of type tlink:PFN_xrVoidFunction, and must
+be cast to the type of the function being queried.
+
+The table below defines the various use cases for
+flink:xrGetInstanceProcAddr and return value ("`fp`" is "`function
+pointer`") for each case.
+
+.xrGetInstanceProcAddr behavior
+[width="80%",options="header"]
+|====
+| pname:instance parameter  | pname:name parameter                            | return value
+| *                         | code:NULL                                       | undefined
+| invalid instance          | *                                               | undefined
+| code:NULL                 | flink:xrEnumerateInstanceExtensionProperties    | fp
+| code:NULL                 | flink:xrEnumerateApiLayerProperties             | fp
+| code:NULL                 | flink:xrCreateInstance                          | fp
+| code:NULL                 | * (any pname:name not covered above)            | code:NULL
+| instance                  | core OpenXR function                            | fp^1^
+| instance                  | enabled extension function for pname:instance   | fp^1^
+| instance                  | * (any pname:name not covered above)            | code:NULL
+|====
+
+1::
+    The returned function pointer must: only be called with a handle (the
+    first parameter) that is pname:instance or a child of pname:instance.
+
+include::../../generated/validity/protos/xrGetInstanceProcAddr.txt[]
+--
+
+[open,refpage='PFN_xrVoidFunction',desc='Generic function pointer type returned by queries',type='funcpointers',xrefs='xrGetInstanceProcAddr']
+--
+
+include::../../generated/api/funcpointers/PFN_xrVoidFunction.txt[]
+
+.Parameter Descriptions
+****
+* no parameters.
+****
+
+tlink:PFN_xrVoidFunction is a generic function pointer type returned by
+queries, specifically those to flink:xrGetInstanceProcAddr.
+--

@@ -25,25 +25,25 @@ toc::[]
 
 include::chapters/introduction.adoc[]
 
-include::chapters/fundamentals.adoc[]
+include::chapters/fundamentals-zh.adoc[]
 
-include::chapters/api_initialization.adoc[]
+include::chapters/api_initialization-zh.adoc[]
 
-include::chapters/instance.adoc[]
+include::chapters/instance-zh.adoc[]
 
-include::chapters/system.adoc[]
+include::chapters/system-zh.adoc[]
 
-include::chapters/semantic_paths.adoc[]
+include::chapters/semantic_paths-zh.adoc[]
 
-include::chapters/spaces.adoc[]
+include::chapters/spaces-zh.adoc[]
 
-include::chapters/view_configurations.adoc[]
+include::chapters/view_configurations-zh.adoc[]
 
-include::chapters/session.adoc[]
+include::chapters/session-zh.adoc[]
 
-include::chapters/rendering.adoc[]
+include::chapters/rendering-zh.adoc[]
 
-include::chapters/input.adoc[]
+include::chapters/input-zh.adoc[]
 
 // Extension process removed from specification
 // per discussion.  See (i/863) for issue involving adding
@@ -63,7 +63,7 @@ ifndef::backend-pdf[]
 include::../generated/index.adoc[]
 endif::backend-pdf[]
 
-include::chapters/appendix.adoc[]
+include::chapters/appendix-zh.adoc[]
 
 // In PDF, use the auto-generated index.
 ifdef::backend-pdf[]

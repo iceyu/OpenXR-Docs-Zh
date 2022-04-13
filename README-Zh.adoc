@@ -1,0 +1,22 @@
+ifdef::env-github[]
+:note-caption: :information_source:
+endif::[]
+
+= OpenXR™ API Documentation Project
+
+原 OpenXR API 文档并不复杂，建议直接阅读原文档。
+
+本项目为 OpenXR API 文档的个人翻译，仅作参考使用。
+
+个人能力有限，此翻译仍处于初期，进度不定，敬请见谅。如有意见，可发生邮件 到 iceyuool@gmail.com。
+
+
+暂在 OpenXR-Docs-Zh\specification\out 下 存有一份生成后的文档用于直接查看。
+
+
+在windows 下的文档生产 参考以下步骤：
+1.docker run -it --rm --mount type=bind,source="D:\\openxr\\OpenXR-Docs-Zh",target=/openxr khronosgroup/docker-images:openxr.202110
+2.进入  openxr\OpenXR-Docs-Zh\specification
+3.make html
+4.查看 OpenXR-Docs-Zh\specification\out生产文档。
+
